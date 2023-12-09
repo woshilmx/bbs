@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册 - 校园BBS系统</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #009BCD;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #009BCD;
+        }
+
+        .auth-links {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .register-form {
+            margin: 20px auto;
+            width: 60%;
+            padding: 20px;
+            border: 1px solid #009BCD;
+            border-radius: 5px;
+        }
+
+        .register-form input[type="text"],
+        .register-form input[type="password"],
+        .register-form input[type="submit"],
+        .register-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .register-form input[type="submit"] {
+            background-color: #009BCD;
+            color: white;
+            cursor: pointer;
+        }
+
+        .register-form input[type="submit"]:hover {
+            background-color: #007399;
+        }
+
+        #selectedAvatar {
+            max-width: 100px; /* 图像最大宽度 */
+            height: auto; /* 根据宽度等比例缩放高度 */
+            margin-top: 10px; /* 上边距 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>注册 - 校园BBS系统</h1>
+    <div class="auth-links">
+        <a href="#">您尚未登录</a>
+        <a href="#">注册</a>
+    </div>
+    <a href="index.html">返回首页</a>
+    <div class="register-form">
+        <form>
+            <input id="userName" type="text" placeholder="用户名" required>
+            <input id="userPass" type="password" placeholder="密码" required>
+            <input id="checkPass" type="password" placeholder="重复密码" required>
+            <select id="xingbie">
+                <option value="1">男性</option>
+                <option value="2">女性</option>
+            </select>
+            <select id="avatar" name="avatar" required>
+                <option value="1.jpg">头像1</option>
+                <option value="2.jpg">头像2</option>
+                <option value="3.jpg">头像3</option>
+            </select>
+            <input id="regButton" type="submit" value="注册">
+
+            <img id="selectedAvatar" src="" alt="选择的头像">
+        </form>
+    </div>
+</div>
+
+</body>
+<script>
+
+
+    $('#avatar').change(function () {
+        var selectedAvatar = $(this).val(); // 获取选择的头像值
+        $('#selectedAvatar').attr('src', "img/" + selectedAvatar); // 设置图像src属性
+    });
+
+
+    $('#regButton').click(function (e) {
+        e.preventDefault(); // 防止表单默认提交
+
+        // 获取表单值
+        var userName = $('#userName').val();
+        var userPass = $('#userPass').val();
+        var checkPass = $('#checkPass').val();
+        var xingbie = $('#xingbie').val();
+
+        // 构建要发送的数据
+        var dataToSend = {
+            userName: userName,
+            userPass: userPass,
+            checkPass: checkPass,
+            gender: xingbie,
+            head: $('#avatar').val()
+        };
+
+        // 发送 POST 请求
+        $.ajax({
+            url: '/user/create', // 后端注册的URL
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(dataToSend),
+            success: function (response) {
+                // 处理注册成功逻辑
+                console.log(response);
+                if (response.code === 0) {
+                    // 注册成功后跳转到登录页面
+                    window.location.href = 'login.html';
+                } else {
+                    alert(response.message); // 错误提示
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error); // 输出错误到控制台
+            }
+        });
+    });
+</script>
+</html>

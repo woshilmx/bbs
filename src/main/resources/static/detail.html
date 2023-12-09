@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>帖子详情 - 校园BBS系统</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #009BCD;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #009BCD;
+        }
+
+        .return-links {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .return-links a {
+            color: #009BCD;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .return-links a:hover {
+            text-decoration: underline;
+        }
+
+        .reply-section {
+            margin-top: 20px;
+        }
+
+        .reply-box {
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .reply-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .reply-details {
+            color: #555;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+        }
+
+        .action-buttons a {
+            padding: 8px 16px;
+            background-color: #009BCD;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .action-buttons a:hover {
+            background-color: #007399;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: 1px solid #009BCD;
+            border-radius: 3px;
+            color: #009BCD;
+            text-decoration: none;
+        }
+
+        .pagination a.active {
+            background-color: #009BCD;
+            color: white;
+        }
+
+        /* 新增样式 */
+        .post-info {
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .post-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #009BCD;
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+        }
+
+        .post-time {
+            color: #555;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>帖子标题</h1>
+    <div class="return-links">
+        <a href="list.html">返回首页 - <span id="boardname">灌水乐园</span> </a>
+    </div>
+    <div class="action-buttons">
+        <a id="post" href="#">发帖</a>
+        <a id="replay" href="#">回复</a>
+    </div>
+
+    <!-- 帖子信息部分 -->
+    <div class="post-info">
+        <div id="title" class="post-title">校园BBS系统</div>
+        <div id="content" class="post-content">
+            帖子内容...
+        </div>
+        <div id="pbulishTime" class="post-time">
+            发布时间: 2023-12-14
+        </div>
+    </div>
+
+    <!-- 第一个回复 -->
+    <div class="reply-section">
+        <!--        <div class="reply-box">-->
+        <!--            <div class="reply-title">回复标题</div>-->
+        <!--            <div class="reply-details">-->
+        <!--                <p>回复内容...</p>-->
+        <!--                <p>时间: 2023-12-15</p>-->
+        <!--                <p>用户: John Doe</p>-->
+        <!--            </div>-->
+        <!--        </div>-->
+    </div>
+
+    <!-- 第二个回复 -->
+    <!--    <div class="reply-section">-->
+    <!--        <div class="reply-box">-->
+    <!--            <div class="reply-title">另一个回复标题</div>-->
+    <!--            <div class="reply-details">-->
+    <!--                <p>回复内容...</p>-->
+    <!--                <p>时间: 2023-12-16</p>-->
+    <!--                <p>用户: Jane Smith</p>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+
+    <!-- 添加更多回复框 -->
+
+    <!-- 分页 -->
+    <div class="pagination">
+        <a href="#" id="up">上一页</a>
+        <a href="#" id="down">下一页</a>
+        <!-- 可添加更多页码 -->
+    </div>
+</div>
+
+</body>
+<script>
+    var current = 1
+    $(document).ready(function () {
+        // 获取 URL 中的参数值
+        const urlParams = new URLSearchParams(window.location.search);
+        const topicId = urlParams.get('topicid');
+        const boardName = urlParams.get('boardname');
+
+        // 更新 boardname 的内容为获取到的 boardName
+        $('#boardname').text(boardName);
+        const boardId = urlParams.get('boardid');
+
+        // 更新发帖链接的 href 属性
+        $('#post').attr('href', 'post.html?boardid=' + boardId);
+
+        // 更新回复链接的 href 属性
+        $('#replay').attr('href', 'reply.html?topicid=' + topicId);
+
+        // 发送获取帖子信息的请求
+        $.ajax({
+            url: '/topic/' + topicId, // 替换为实际的后端地址
+            type: 'GET',
+
+            dataType: 'json',
+            success: function (response) {
+                if (response.code === 0) {
+                    displayPostInfo(response.data);
+                } else {
+                    console.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+
+        // 显示帖子信息到页面中
+        function displayPostInfo(postData) {
+            $('#title').text(postData.title);
+            $('#content').text(postData.content);
+            $('#publishTime').text('发布时间: ' + postData.publishTime);
+        }
+
+        $("#up").click(() => {
+            current--;
+            if (current <= 0) {
+                current = 1
+                alert("curent不能小于0")
+                return
+            }
+            fetchReplies(topicId)
+        })
+
+        $("#down").click(() => {
+            if (current <= 0) {
+                alert("curent不能小于0")
+                return
+            }
+            current++;
+            fetchReplies(topicId)
+        })
+        //    根据topicid请求回复
+        fetchReplies(topicId)
+
+        // 获取回复列表数据并显示
+        function fetchReplies(topicId) {
+            $.ajax({
+                url: '/reply/topic?topicId=' + topicId + '&size=10&current=' + current, // 获取回复列表的 URL
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.code === 0) {
+                        total = response.data.total
+                        displayReplies(response.data.records);
+                    } else {
+                        // alert(response.message)
+                        console.error(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        // 在页面中显示回复列表
+        function displayReplies(replies) {
+            const replySection = $('.reply-section');
+            replySection.empty()
+            replies.forEach(function (reply) {
+                const replyBox = $('<div class="reply-box"></div>');
+                replyBox.append('<div class="reply-title">' + reply.title + '</div>');
+                const replyDetails = $('<div class="reply-details"></div>');
+                replyDetails.append('<p>回复内容: ' + reply.content + '</p>');
+                replyDetails.append('<p>时间: ' + reply.publishTime + '</p>');
+                replyDetails.append('<p>用户id: ' + reply.userId + '</p>');
+                replyBox.append(replyDetails);
+                replySection.append(replyBox);
+            });
+        }
+    });
+
+</script>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>帖子列表 - 校园BBS系统</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #009BCD;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #009BCD;
+        }
+
+        .return-links {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .return-links a {
+            color: #009BCD;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .return-links a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .article-col {
+            width: 80%;
+        }
+
+        .author-col, .replies-col {
+            width: 10%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>帖子列表 - 校园BBS系统</h1>
+    <div class="return-links">
+        <a href="index.html">返回首页-<span id="boardname">灌水乐园</span></a>
+        <a href="login.html">登录</a>
+        <a href="register.html">注册</a>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th class="article-col">文章</th>
+            <th class="author-col">作者</th>
+            <th class="replies-col">回复数</th>
+        </tr>
+        </thead>
+        <tbody>
+<!--        <tr>-->
+<!--            <td class="article-col">这是第一篇帖子的标题</td>-->
+<!--            <td class="author-col">John Doe</td>-->
+<!--            <td class="replies-col">8</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td class="article-col">这是第二篇帖子的标题</td>-->
+<!--            <td class="author-col">Jane Smith</td>-->
+<!--            <td class="replies-col">15</td>-->
+<!--        </tr>-->
+        <!-- 添加更多帖子行 -->
+        </tbody>
+    </table>
+</div>
+<script>
+
+    $(document).ready(function() {
+        // 获取 URL 中的参数值
+        const urlParams = new URLSearchParams(window.location.search);
+        const boardName = urlParams.get('name');
+        const boardId = urlParams.get('id');
+
+        // 更新 boardname 的内容为获取到的 boardName
+        $('#boardname').text(boardName);
+
+        // 发送获取帖子信息的请求
+        $.ajax({
+            url: '/topic/board', // 替换为实际的后端地址
+            type: 'GET',
+            data: {
+                boardId: boardId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.code === 0) {
+                    displayPosts(response.data);
+                } else {
+                    console.error(response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+
+        // 显示帖子信息到表格中
+        function displayPosts(posts) {
+            var tableBody = $('table tbody');
+            tableBody.empty(); // 清空表格内容
+
+            posts.forEach(function(post) {
+                var row = '<tr>' +
+                    '<td class="article-col"><a href="detail.html?topicid=' + post.topicId + '&boardname=' + boardName +"&boardid="+boardId+ '">' + post.title + '</a></td>' +
+                    '<td class="author-col">' + post.userName + '</td>' +
+                    '<td class="replies-col">' + post.replayCount + '</td>' +
+                    '</tr>';
+                tableBody.append(row);
+            });
+        }
+    });
+
+</script>
+</body>
+</html>

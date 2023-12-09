@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>校园BBS系统</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #009BCD;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #009BCD;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #009BCD;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #009BCD;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .auth-links {
+            /*color: black;*/
+            text-align: right;
+            margin-top: 10px;
+            float: left;
+        }
+
+        .auth-links a {
+            /*color: #ffffff;*/
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .special-row {
+            /*background-color: #009BCD;*/
+            /*color: white;*/
+            font-weight: bold;
+        }
+
+        .special-row td {
+            text-align: left;
+        }
+
+        /* 设置单元格宽度百分比 */
+        td:nth-child(1),
+        td:nth-child(3) {
+            width: 10%;
+        }
+
+        td:nth-child(2),
+        td:nth-child(4) {
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>校园BBS系统</h1>
+    <div class="auth-links">
+        您尚未
+        <a href="login.html">登录</a>
+        <a href="reg.html">注册</a>
+    </div>
+    <table id="table">
+        <tr>
+            <th colspan="2">论坛</th>
+            <th>主题</th>
+            <th>最后发表</th>
+        </tr>
+<!--        <tr class="special-row">-->
+<!--            <td colspan="4">NET方向</td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td></td>-->
+<!--            <td>.NET方向</td>-->
+<!--            <td></td>-->
+<!--            <td></td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td></td>-->
+<!--            <td>.NET方向</td>-->
+<!--            <td></td>-->
+<!--            <td></td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td></td>-->
+<!--            <td>.NET方向</td>-->
+<!--            <td></td>-->
+<!--            <td></td>-->
+<!--        </tr>-->
+        <!--        其他的-->
+    </table>
+</div>
+</body>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/board/tree',
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response.code === 0) {
+                    displayBoardInfo(response.data);
+                } else {
+                    console.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+
+        function displayBoardInfo(data) {
+            var table = $('#table');
+
+            Object.keys(data).forEach(function (key) {
+                var boards = data[key];
+
+                var row = '<tr class="special-row"><td colspan="4">' + key + '</td></tr>';
+                table.append(row);
+
+                boards.forEach(function (board) {
+                    var boardRow = '<tr><td></td><td><a href="list.html?name=' + board.boardName + '&id=' + board.boardId + '">' + board.boardName + '</a></td><td></td><td></td></tr>';
+                    table.append(boardRow);
+                });
+            });
+        }
+    });
+</script>
+</html>

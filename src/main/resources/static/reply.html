@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>回帖 - 校园BBS系统</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #009BCD;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #009BCD;
+        }
+
+        .return-link {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .return-link a {
+            color: #009BCD;
+            text-decoration: none;
+        }
+
+        .return-link a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-links {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .auth-links a {
+            color: #009BCD;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .reply-form {
+            margin: 20px auto;
+            width: 60%;
+            padding: 20px;
+            border: 1px solid #009BCD;
+            border-radius: 5px;
+        }
+
+        .reply-form input[type="text"],
+        .reply-form textarea,
+        .reply-form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .reply-form textarea {
+            min-height: 500px;
+            resize: vertical;
+        }
+
+        .reply-form .note {
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .reply-form input[type="submit"] {
+            background-color: #009BCD;
+            color: white;
+            cursor: pointer;
+        }
+
+        .reply-form input[type="submit"]:hover {
+            background-color: #007399;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>回帖 - 校园BBS系统</h1>
+
+    <div class="auth-links">
+        您尚未
+        <a href="login.html">登录</a>
+        <a href="reply.html">注册</a>
+    </div>
+    <div class="reply-form">
+        <form>
+            <input id="title" type="text" placeholder="标题" required>
+            <textarea id="content" placeholder="内容（不超过1000字）" style="min-height: 500px" maxlength="1000" required></textarea>
+            <input id="post-form" type="button" value="回帖">
+        </form>
+        <div class="note">请注意，内容不能超过1000字。</div>
+    </div>
+</div>
+
+</body>
+<script>
+    var user;
+
+    $(document).ready(function () {
+        $('#post-form').click(function (event) {
+            event.preventDefault();
+            checkLoginStatus();
+        });
+    });
+
+    function submitReply() {
+        const title = $('#title').val();
+        const content = $('#content').val();
+
+        // 构造回帖参数
+        const replyParams = {
+            title: title,
+            content: content,
+            userId: user.userId,
+            topicId: parseInt(new URLSearchParams(window.location.search).get('topicid'))
+        };
+
+        // 发送回帖请求
+        $.ajax({
+            url: '/reply/create',
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(replyParams),
+            success: function (response) {
+                if (response.code === 0) {
+                    window.history.back();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                alert('发生错误，请重试！');
+            }
+        });
+    }
+
+    // 检查登录状态的函数
+    function checkLoginStatus() {
+        // 发送 GET 请求检查登录状态
+        $.ajax({
+            url: 'login',
+            type: 'GET',
+            success: function (response) {
+                if (response.code === 0) {
+                    user = response.data;
+                    submitReply(); // 登录成功后提交回帖
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+                alert('发生错误，请重试！');
+            }
+        });
+    }
+</script>
+
+</html>

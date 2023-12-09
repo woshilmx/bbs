@@ -1,0 +1,13 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=bbs;encrypt=false
+    username: sa
+    password: lmx200wx
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver # 根据你的数据库驱动选择对应的类名
+mybatis-plus:
+    mapper-locations: classpath*:mapper/**/*.xml # MyBatis Plus Mapper 文件路径，根据你的项目结构调整
+    configuration:
+      map-underscore-to-camel-case: false
+#    type-aliases-package: com.bbs.project.model # 实体类所在的包路径，根据你的实际情况调整

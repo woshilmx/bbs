@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - 校园BBS系统</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <style>
+        /* 其他样式和之前相同 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #009BCD;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #009BCD;
+        }
+
+        .auth-links {
+            text-align: left;
+            margin-bottom: 10px;
+
+        }
+
+        .login-form {
+            margin: 20px auto;
+            width: 60%;
+            padding: 20px;
+            border: 1px solid #009BCD;
+            border-radius: 5px;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"],
+        .login-form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .login-form input[type="submit"] {
+            background-color: #009BCD;
+            color: white;
+            cursor: pointer;
+        }
+
+        .login-form input[type="submit"]:hover {
+            background-color: #007399;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>登录 - 校园BBS系统</h1>
+    <div class="auth-links">
+        您尚未
+        <a href="login.html">登录</a>
+        <a href="reg.html">注册</a>
+    </div>
+    <a href="index.html">返回首页</a>
+    <div class="login-form">
+        <form>
+            <input id="username" type="text" placeholder="用户名" required>
+            <input id="password" type="password" placeholder="密码" required>
+            <input id="loginBtn" type="button" value="登录">
+        </form>
+    </div>
+</div>
+<script>
+    $('#loginBtn').click(function () {
+        var username = $('#username').val();
+        var password = $('#password').val();
+
+        // 发送 POST 请求
+        $.ajax({
+            url: '/login', // 后端验证的URL
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                userName: username,
+                userPass: password
+            },
+            success: function (response) {
+                if (response.code === 0) {
+                    window.location.href = 'index.html'; // 登录成功后的跳转页面
+                } else {
+                    alert(response.message); // 错误提示
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error); // 输出错误到控制台
+            }
+        });
+    });
+</script>
+</body>
+</html>
